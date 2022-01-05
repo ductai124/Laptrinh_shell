@@ -1,0 +1,13 @@
+#
+#Script to read your name from key-board
+#
+echo "Nhập số A:"
+read A
+echo "Số A là : $A"
+
+echo "Nhập số B:"
+read B
+echo "Số B là : $B"
+
+echo "A + B = `expr $B + $A`"
+
