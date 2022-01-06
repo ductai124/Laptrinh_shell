@@ -8,7 +8,8 @@ echo "$1"
 echo "$2"
 cp $1 $2 /root/baitaplinux
 TODAY=`date +"%H:%M %d-%m-%Y"`
-echo '$USER $TODAY NOP BAI $1 $2' >> /root/baitaplinux/log.txt
+
+echo "$USER $TODAY NOP BAI $1 $2" >> /root/baitaplinux/log.txt
 
 #while [ $i -lt $# ]
 #do
