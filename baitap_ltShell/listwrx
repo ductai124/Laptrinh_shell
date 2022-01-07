@@ -1,3 +1,17 @@
 echo "Thư mục muốn kiểm tra là $1"
 echo "Danh sách các file có quyền đọc ghi và thực thi là:"
-ls -la $1 | grep "^-" | grep "rwx"
+cd $1
+echo "Những file có quyền được đọc ghi và thực thi"
+for filename in $(ls -tr ); do
+	#echo $filename
+	if [ -w $filename ] && [ -r $filename ] && [ -x $filename ]
+	then
+        	echo "$filename"
+	#else
+        	#echo "File $filename không thể ghi"
+	fi
+
+done
+cd
+
+#ls -la $1 | grep "^-" | grep "rwx"
