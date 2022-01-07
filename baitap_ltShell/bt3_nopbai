@@ -9,8 +9,8 @@ echo "$2"
 cp $1 $2 /home/baitaplinux
 TODAY=`date +"%H:%M %d-%m-%Y"`
 
-chmod 700 /home/baitaplinux/$1
-chmod 700 /home/baitaplinux/$2
+chmod 1722 /home/baitaplinux/$1
+chmod 1722 /home/baitaplinux/$2
 
 echo "$USER $TODAY NOP BAI $1 $2" >> /home/baitaplinux/log.txt
 
