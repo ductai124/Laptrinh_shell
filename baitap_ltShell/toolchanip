@@ -1,0 +1,75 @@
+echo "File cần đọc log là $1"
+rm -f ip.text
+#csf -r
+echo "Quá trình biên dịch log"
+echo "Log được biên dịch như sau"
+i=0
+for linedelete in $(cat "$1")
+do
+        #strip_all "$linedelete" "[%3]"
+        #echo "chuỗi gốc $linedelete"
+        #echo "Sau khi biên dịch"
+        #urldecode "$linedelete"
+	echo ""
+        A="$linedelete"
+        A="${A//%3/}"
+        A="${A//%2E/.}"
+        A="${A//&/ }"
+        A="${A//%2D/-}"
+        A="${A//%20/ }"
+        A="${A//%3A/:}"
+        A="${A//%28/(}"
+        A="${A//%29/)}"
+        A="${A//%5B/[}"
+        A="${A//%5D/]}"
+        A="${A//%5F/_}"
+        A="${A//%3D/=}"
+        echo "$A"
+        B="$(cut -d'&' -f3 <<<"$linedelete")"
+        B="${B//%3/}"
+        B="${B//%2E/.}"
+        i=`expr $i + 1`
+        echo "$B" >> /root/ip.text
+done
+grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+" ip.text | sort | uniq -c > ipcount.text
+echo ""
+echo ""
+echo ""
+echo "Quá trình kiểm tra và chặn ip"
+echo ""
+
+
+#chan ip
+#PATH="/root/ipcount.text"
+file="ipcount.text"
+#echo "File cần biên dịch là $file "
+t=1
+for linedelete in $(cat "$file")
+do
+        #echo "dong $t"
+        #echo "$linedelete"
+        IP[$t]="$linedelete"
+        t=`expr $t + 1`
+done
+
+j=1
+for phantu in "${IP[@]}"
+do
+        if [ `expr $j % 2` -eq 1 ]
+        then
+                echo "Dải ip ${IP[j+1]} có số lân truy cập là $phantu"
+                if [ "$phantu" -ge 3 ]
+                        then
+                        echo "Dải ip ${IP[j+1]}.0 cần phải chặn do có dấu hiệu đáng ngờ"
+                        D="${IP[j+1]}.0"
+                        csf -td $D/0 30 -d inout "block $D connections for 180s"
+                else
+                        echo "Dải ip ${IP[j+1]}.0 có số lượng truy cập bình thường"
+                fi
+        else
+		echo ""
+	fi
+        	j=`expr $j + 1`
+done
+echo "Danh sách các dải IP duyệt được và đang trong quá trình chặn tạm thời"
+csf -t
