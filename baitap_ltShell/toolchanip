@@ -4,7 +4,7 @@ rm -f ip.text
 echo "Quá trình biên dịch log"
 echo "Log được biên dịch như sau"
 i=0
-for linedelete in $(cat "$1")
+for linedelete in $(cat "$1/logtest")
 do
         #strip_all "$linedelete" "[%3]"
         #echo "chuỗi gốc $linedelete"
@@ -29,9 +29,9 @@ do
         B="${B//%3/}"
         B="${B//%2E/.}"
         i=`expr $i + 1`
-        echo "$B" >> /root/ip.text
+        echo "$B" >> $1/ip.text
 done
-grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+" ip.text | sort | uniq -c > ipcount.text
+grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+" ip.text | sort | uniq -c > $1/ipcount.text
 echo ""
 echo ""
 echo ""
@@ -41,7 +41,7 @@ echo ""
 
 #chan ip
 #PATH="/root/ipcount.text"
-file="ipcount.text"
+file="$1/ipcount.text"
 #echo "File cần biên dịch là $file "
 t=1
 for linedelete in $(cat "$file")
