@@ -31,17 +31,30 @@ do
         i=`expr $i + 1`
         echo "$B" >> $1/ip.text
 done
-grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+" ip.text | sort | uniq -c > $1/ipcount.text
+grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+" ip.text | sort | uniq -c > $1/IPrangecount.text
+grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+" ip.text | sort | uniq -c > $1/ipcount.text
 echo ""
 echo ""
 echo ""
 echo "Quá trình kiểm tra và chặn ip"
 echo ""
+echo ""
+echo "Danh sách ip và số lần xuất hiện của chúng"
+echo "Truy cập			IP"
+grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+" ipcount.text | sort -nrk 1 ipcount.text | uniq -c | awk '{print $2"    			"$3}'
+
+echo ""
+echo ""
+echo "Danh sách dải ip và số lần xuất hiện của chúng"
+echo "Truy cập                  Dải IP"
+grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+" IPrangecount.text | sort -nrk 1 IPrangecount.text | uniq -c | awk '{print $2"                        "$3}'
+
+#sort -nrk 1 $1/IPrangecount.text
 
 
 #chan ip
 #PATH="/root/ipcount.text"
-file="$1/ipcount.text"
+file="$1/IPrangecount.text"
 #echo "File cần biên dịch là $file "
 t=1
 for linedelete in $(cat "$file")
@@ -52,22 +65,30 @@ do
         t=`expr $t + 1`
 done
 
+#rm -f $1/logblockIprange.text
 j=1
+TODAY=`date +"%H:%M %d-%m-%Y"`
 for phantu in "${IP[@]}"
 do
         if [ `expr $j % 2` -eq 1 ]
         then
-                echo "Dải ip ${IP[j+1]} có số lân truy cập là $phantu"
-                if [ "$phantu" -ge 3 ]
+                #echo "Dải ip ${IP[j+1]} có số lân truy cập là $phantu"
+                if [ "$phantu" -ge 10 ]
                         then
-                        echo "Dải ip ${IP[j+1]}.0 cần phải chặn do có dấu hiệu đáng ngờ"
-                        D="${IP[j+1]}.0"
-                        csf -td $D/0 30 -d inout "block $D connections for 180s"
-                else
-                        echo "Dải ip ${IP[j+1]}.0 có số lượng truy cập bình thường"
+                        echo "Dải ip ${IP[j+1]}.0/24 cần phải chặn do có dấu hiệu đáng ngờ (Truy cập trên 10 lần cụ thể là $phantu)"
+                        echo ""
+			echo ""
+			echo "Bắt đầu chặn ${IP[j+1]}.0/24"
+			D="${IP[j+1]}.0"
+                        csf -td $D/24 60 -d inout "block $D connections for 180s"
+			echo "$TODAY 					Chặn $D trong 180s" >> $1/logblockIprange.text
+			echo ""
+			echo ""
+                #else
+                        #echo "Dải ip ${IP[j+1]}.0 có số lượng truy cập bình thường"
                 fi
-        else
-		echo ""
+        #else
+		#echo ""
 	fi
         	j=`expr $j + 1`
 done
